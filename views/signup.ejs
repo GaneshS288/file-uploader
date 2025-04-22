@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+</head>
+<body>
+    <form action="/signup" method="post">
+        <fieldset>
+            <legend>Sign Up</legend>
+            <div>
+                <label for="username">Name:</label>
+                <input type="text" minlength="4" id="username" name="username" autocomplete="username" required>
+            </div>
+
+            <div>
+                <label for="password">Password:</label>
+                <input type="text" minlength="4" id="password" name="password" autocomplete="new-password" required>
+            </div>
+
+            <button type="submit">Sign Up</button>
+        </fieldset>
+    </form>
+</body>
+</html>
