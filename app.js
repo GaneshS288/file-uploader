@@ -23,6 +23,9 @@ app.use(
       dbRecordIdFunction: false,
       checkPeriod: 2 * 60 * 1000, //120 seconds
     }),
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000, //1 day
+    },
   })
 );
 app.use(passport.session());
@@ -32,7 +35,7 @@ app.use("/auth", authRouter);
 app.get("/", (req, res) => {
   console.log(req.isAuthenticated());
   console.log(req.user);
-  
+
   res.send("Hello there obi wan");
 });
 
