@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    <h1>welcome to home! You are <%= authenticated ? "Authenticated" : "Unautheticated" %></h1>
+
+    <ul>
+        <li><a href="/auth/signup">Signup</a><a href="/auth/login">Login</a><a href="/auth/logout">Logout</a></li>
+    </ul>
+</body>
+</html>

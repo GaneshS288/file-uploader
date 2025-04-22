@@ -33,10 +33,11 @@ app.use(passport.session());
 app.use("/auth", authRouter);
 
 app.get("/", (req, res) => {
-  console.log(req.isAuthenticated());
+  const authenticated = req.isAuthenticated();
+  console.log(authenticated);
   console.log(req.user);
 
-  res.send("Hello there obi wan");
+  res.render("home", { authenticated });
 });
 
 app.listen(8080, () => console.log("Server listening at port 8080"));
