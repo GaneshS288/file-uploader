@@ -5,8 +5,7 @@ import passport from "./auth/passport_config.js";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import prismaClient from "./db/prismaClient.js";
 import path from "node:path";
-import signupRouter from "./routes/signupRouter.js";
-import loginRouter from "./routes/loginRouter.js";
+import authRouter from "./routes/authRouter.js";
 
 const app = express();
 
@@ -22,14 +21,19 @@ app.use(
     store: new PrismaSessionStore(prismaClient, {
       dbRecordIdIsSessionId: true,
       dbRecordIdFunction: false,
-      checkPeriod: 2 * 60 * 1000 //120 seconds
+      checkPeriod: 2 * 60 * 1000, //120 seconds
     }),
   })
 );
 app.use(passport.session());
 
-app.use("/auth", signupRouter, loginRouter);
+app.use("/auth", authRouter);
 
-app.get("/", (req, res) => res.send("Hello there obi wan"));
+app.get("/", (req, res) => {
+  console.log(req.isAuthenticated());
+  console.log(req.user);
+  
+  res.send("Hello there obi wan");
+});
 
 app.listen(8080, () => console.log("Server listening at port 8080"));
