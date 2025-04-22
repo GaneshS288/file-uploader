@@ -21,4 +21,15 @@ authRouter.post(
     failureRedirect: "/login",
   })
 );
+
+authRouter.get("/logout", (req, res) => {
+  req.logout((err) => {
+    if (err) {
+      console.log(err);
+      res.send("something happened during logout");
+    } else {
+      res.redirect("/");
+    }
+  });
+});
 export default authRouter;
