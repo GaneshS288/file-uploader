@@ -22,9 +22,38 @@ model Session {
 }
 
 model Users {
-  id           String @id @default(uuid())
-  name         String @unique
+  id           String    @id @default(uuid())
+  name         String    @unique
   passwordHash String
+  files        Files[]
+  folders      Folders[]
 
   @@map("users")
+}
+
+model Files {
+  id               String   @id @default(uuid())
+  name             String
+  type             String
+  size             Int
+  owner            Users    @relation(fields: [owner_id], references: [id])
+  owner_id         String
+  parent_folder    Folders? @relation(fields: [parent_folder_id], references: [id])
+  parent_folder_id String?
+
+  @@map("files")
+}
+
+model Folders {
+  id               String    @id @default(uuid())
+  name             String
+  size             Int
+  owner            Users     @relation(fields: [owner_id], references: [id])
+  owner_id         String
+  folders          Folders[] @relation("folders")
+  files            Files[]
+  parent_folder    Folders?  @relation("folders", fields: [parent_folder_id], references: [id])
+  parent_folder_id String?
+
+  @@map("folders")
 }
