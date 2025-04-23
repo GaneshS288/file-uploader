@@ -6,6 +6,7 @@ import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import prismaClient from "./db/prismaClient.js";
 import path from "node:path";
 import authRouter from "./routes/authRouter.js";
+import driveRouter from "./routes/driveRouter.js";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use(
 app.use(passport.session());
 
 app.use("/auth", authRouter);
+app.use("/myDrive", driveRouter);
 
 app.get("/", (req, res) => {
   const authenticated = req.isAuthenticated();
