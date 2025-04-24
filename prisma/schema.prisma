@@ -36,10 +36,12 @@ model Files {
   name             String
   type             String
   size             Int
+  created_at       DateTime @default(now())
   owner            Users    @relation(fields: [owner_id], references: [id])
   owner_id         String
   parent_folder    Folders? @relation(fields: [parent_folder_id], references: [id])
   parent_folder_id String?
+  storage_path     String
 
   @@map("files")
 }
@@ -48,12 +50,14 @@ model Folders {
   id               String    @id @default(uuid())
   name             String
   size             Int
+  created_at       DateTime  @default(now())
   owner            Users     @relation(fields: [owner_id], references: [id])
   owner_id         String
   folders          Folders[] @relation("folders")
   files            Files[]
   parent_folder    Folders?  @relation("folders", fields: [parent_folder_id], references: [id])
   parent_folder_id String?
+  storage_path     String
 
   @@map("folders")
 }
