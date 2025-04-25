@@ -6,10 +6,18 @@ import { getUserFileByName } from "../db/queries.js";
 const storage = multer.diskStorage({
   destination: async (req, file, done) => {
     if (!fsSync.existsSync("./storage")) {
-      await fs.mkdir("./storage/");
+      try {
+        await fs.mkdir("./storage/");
+      } catch (err) {
+        console.log(err);
+      }
     }
     if (!fsSync.existsSync(`./storage/${req.user.name}`)) {
-      await fs.mkdir(`./storage/${req.user.name}`);
+      try {
+        await fs.mkdir(`./storage/${req.user.name}`);
+      } catch (error) {
+        console.log(error);
+      }
     }
     done(null, `./storage/${req.user.name}`);
   },
@@ -19,14 +27,18 @@ const storage = multer.diskStorage({
 });
 
 async function fileFilter(req, file, done) {
-  const fileExists = await getUserFileByName(req.user.id, file.originalname);
-  if (fileExists) {
-    console.log(`skipped file ${file.originalname}`);
-    req.body.skippedFiles
-      ? req.body.skippedFiles.push(file)
-      : (req.body.skippedFiles = [file]);
-    done(null, false);
-  } else done(null, true);
+  try {
+    const fileExists = await getUserFileByName(req.user.id, file.originalname);
+    if (fileExists) {
+      console.log(`skipped file ${file.originalname}`);
+      req.body.skippedFiles
+        ? req.body.skippedFiles.push(file)
+        : (req.body.skippedFiles = [file]);
+      done(null, false);
+    } else done(null, true);
+  } catch (error) {
+    done(error);
+  }
 }
 
 const upload = multer({
