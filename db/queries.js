@@ -9,14 +9,16 @@ async function getAllUserFiles(user) {
 }
 
 async function getUserFileByName(userId, filename) {
-  const file = await prismaClient.files.findFirst({where: {
-    owner_id: userId,
-    parent_folder_id: null,
-    name: {
-      contains: filename,
-      mode: "insensitive"
-    }
-  }})
+  const file = await prismaClient.files.findFirst({
+    where: {
+      owner_id: userId,
+      parent_folder_id: null,
+      name: {
+        contains: filename,
+        mode: "insensitive",
+      },
+    },
+  });
 
   return file;
 }
@@ -25,7 +27,7 @@ async function createFile(user, file) {
   await prismaClient.files.create({
     data: {
       name: file.filename,
-      type: file.mimetype.split("/")[1],
+      type: file.mimetype,
       size: file.size,
       owner_id: user.id,
       storage_path: file.path,
