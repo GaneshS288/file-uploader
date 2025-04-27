@@ -137,3 +137,6 @@ dist
 
 # prisma generated files
 generated
+
+# local file storage
+storage

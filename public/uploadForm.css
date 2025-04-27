@@ -1,0 +1,60 @@
+:root {
+    --primary-light-text-color: #09090b;
+    --button-text-color: #fafafa;
+    --button-box-shadow-color: #a1a1a1;
+    --light-red-color: #fb2c36;
+    --dark-red-color: #9f0712;
+    --light-gray: #e4e4e7;
+    --primary-blue: #1447e6;
+    --secondary-blue: #1c398e;
+  }
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1rem;
+    min-height: 100vh;
+}
+
+form {
+    flex: 1;
+    max-width: 600px;
+    border: 2px solid black;
+    padding: 2rem;
+    display: grid;
+    row-gap: 1rem;
+}
+
+.label-and-button-container {
+    display: flex;
+    gap: 1rem;
+}
+
+.choose-file-label {
+    padding: 5px 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    color: black;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+.choose-file-label:hover {
+    box-shadow: 1px 1px 1px 1px gainsboro;
+}
+
+
+button {
+    background-color: var(--primary-blue);
+    color: whitesmoke;
+    border: none;
+    font-weight: 700;
+    width: 100px;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+button:hover {
+    background-color: var(--secondary-blue);
+}

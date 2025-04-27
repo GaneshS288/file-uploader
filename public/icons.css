@@ -1,0 +1,45 @@
+.icon {
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: white;
+    border: none;
+}
+
+div.file-icon-buttons > .icon:hover {
+    
+    border-radius: 5px;
+    animation: scaleUP 0.5s ease-out forwards;
+}
+
+@keyframes scaleUP {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.1);
+    }
+}
+
+.image-icon {
+    background-image: url(icons/image.svg);
+}
+
+.info-icon {
+    background-image: url(./icons/info.svg);
+}
+
+.share-icon {
+    background-image: url(./icons/share.svg);
+}
+
+.delete-icon {
+    background-image: url(./icons/delete.svg);
+}
+
+.folder-icon {
+    background-image: url(./icons/folder.svg);
+}

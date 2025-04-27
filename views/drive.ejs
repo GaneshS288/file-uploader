@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/reset.css">
+    <link rel="stylesheet" href="/drive.css">
+    <link rel="stylesheet" href="/icons.css">
+    <title>My Drive</title>
+</head>
+<body>
+    <%- include("./partials/driveHeader.ejs", {name : "Ganesh"}) %>
+    <%- include("./partials/driveNavigationBar.ejs", {pathList: ""}) %>
+
+    <% if(folders.length > 0 || files.length > 0) {%>
+    <%- include("./partials/folderList.ejs", { folders }) %>
+    <%- include("./partials/fileList.ejs", { files }) %>
+    <% } %>
+
+    <% if(folders.length === 0 && files.length === 0) { %>
+        <section class="empty-drive-message-section">
+            <img src="/icons/folder.svg" alt="empty_drive">
+            <p class="empty-drive-message">Nothing here for now</p>
+        </section>
+    <% } %>    
+
+    <%- include("./partials/mainButtons.ejs", { currentFolderId : null }) %>
+</body>
+</html>

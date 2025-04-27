@@ -1,0 +1,11 @@
+<footer class="drive-main-buttons-container">
+    <% if(!currentFolderId) {%>
+        <a href="/myDrive/createFolder" class="create-folder-button">Create Folder</a>
+        <a href="/myDrive/upload" class="upload-files-button">Upload Files</a>
+        <% } %>
+
+    <% if (currentFolderId) { %>
+        <a href="/myDrive/createFolder/<%= currentFolderId %>" class="create-folder-button">Create Folder</a>
+        <a href="/myDrive/upload/<%= currentFolderId %>" class="upload-files-button">Upload Files</a>
+    <% } %>
+</footer>

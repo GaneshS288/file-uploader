@@ -1,0 +1,27 @@
+<% if(files.length > 0) {%>
+<section class="file-section">
+    <h2 class="files-heading">Files</h2>
+    <ul class="file-list">
+        <% for(let i = 0; i < files.length; i ++) {%>
+            <li data-name="<%= files[i].name %>"
+                data-size="<%= files[i].size %>"
+                data-created_At="<%= files[i].created_at %>"
+                data-parent_Folder_Id="<%= files[i]["parent_folder_id"] %>"
+                data-file_Id="<%= files[i].id %>"
+                data-type="<%= files[i].type %>"
+                class="file">
+                <div class="file-name-and-icon">
+                    <span class="icon <%= files[i].type.split("/")[0] %>-icon"></span>
+                    <span><%= files[i].name %></span>
+                </div>
+                <span class="file-created-at"><%= files[i].created_at.toDateString() %></span>
+                <div class="file-icon-buttons">
+                    <button class="icon info-icon" aria-label="info"></button>
+                    <button class="icon share-icon" aria-label="share"></button>
+                    <button class="icon delete-icon" aria-label="delete"></button>
+                </div>
+            </li>
+        <% } %>    
+    </ul>
+</section>
+<% } %>

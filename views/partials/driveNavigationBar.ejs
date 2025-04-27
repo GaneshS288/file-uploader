@@ -1,0 +1,8 @@
+<nav>
+    <ul class="drive-navigation-list">
+        <li><a href="/myDrive" class="drive-nav-link">My Drive/</a></li>
+        <% for(let i = 0; i < pathList.length; i ++) {%>
+            <li><a href="/myDrive/<%= pathList[i].folderId %>" class="drive-nav-link"><% pathList[i].folderName %></a></li>
+         <% } %>   
+    </ul>
+</nav>

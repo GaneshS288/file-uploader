@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/uploadForm.css">
+    <title>Create Folder</title>
+</head>
+<body>
+    <form action="/myDrive/createFolder" method="post">
+        <p>*Folder name should only consist of alphabets and numbers</p>
+        <label for="folder_name">Folder Name:</label>
+        <input type="text" id="folder_name" name="folderName" minlength="4" required>
+
+        <button type="submit">Create Folder</button>
+    </form>
+</body>
+</html>

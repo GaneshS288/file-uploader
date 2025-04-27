@@ -1,0 +1,26 @@
+<% if(folders.length > 0) {%>
+<section class="folder-section">
+    <h2 class="folders-heading">Folders</h2>
+    <ul class="folder-list">
+    
+
+        <% for(let i = 0; i < folders.length; i ++) {%>
+            <li data-name="<%= folders[i].name %>"
+                data-size="<%= folders[i].size %>"
+                data-created_At="<%= folders[i].created_at %>"
+                data-parent_Folder_Id="<%= folders[i]["parent_folder_id"] %>"
+                data-folder_Id="<%= folders[i].id %>"
+                class="folder">
+                <div class="folder-name-and-icon">
+                    <span class="icon folder-icon"></span>
+                    <span><%= folders[i].name %></span>
+                </div>
+                <span class="folder-created-at"><%= folders[i].created_at.toDateString() %></span>
+                <div class="folder-icon-buttons">
+                    <button class="icon delete-icon" aria-label="delete"></button>
+                </div>
+            </li>
+        <% } %>    
+    </ul>
+</section>
+<% } %>
