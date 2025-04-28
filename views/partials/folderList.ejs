@@ -17,6 +17,7 @@
                 </div>
                 <span class="folder-created-at"><%= folders[i].created_at.toDateString() %></span>
                 <div class="folder-icon-buttons">
+                    <a href="/myDrive?folderId=<%= folders[i].id %>" class="icon open-icon"></a>
                     <button class="icon delete-icon" aria-label="delete"></button>
                 </div>
             </li>

@@ -43,3 +43,7 @@ div.file-icon-buttons > .icon:hover {
 .folder-icon {
     background-image: url(./icons/folder.svg);
 }
+
+.open-icon {
+    background-image: url(./icons/open.svg);
+}

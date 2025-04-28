@@ -1,20 +1,60 @@
 import prismaClient from "./prismaClient.js";
 
-async function getAllUserFiles(user) {
+async function getUserFiles(userId, parentFolderId) {
   const files = await prismaClient.files.findMany({
-    where: { owner_id: user.id },
+    where: { owner_id: userId, parent_folder_id: parentFolderId },
   });
 
   return files;
 }
 
 async function getUserFolders(userId, parentFolderId) {
-  const folders = await prismaClient.folders.findMany({where: {
-    owner_id: userId,
-    parent_folder_id: parentFolderId,
-  }})
+  const folders = await prismaClient.folders.findMany({
+    where: {
+      owner_id: userId,
+      parent_folder_id: parentFolderId,
+    },
+  });
 
   return folders;
+}
+
+async function getUserFolderByName(userId, folderName, parentFolderId) {
+  const folder = await prismaClient.folders.findFirst({
+    where: {
+      name: folderName,
+      owner_id: userId,
+      parent_folder_id: parentFolderId,
+    },
+  });
+
+  return folder;
+}
+
+async function getUserFolderById(userId, folderId) {
+  const folder = await prismaClient.folders.findFirst({
+    where: { id: folderId },
+  });
+  return folder;
+}
+
+async function createUserFolder(
+  userId,
+  newFolderName,
+  storagePath,
+  parentFolderId = null
+) {
+  const createdFolder = await prismaClient.folders.create({
+    data: {
+      name: newFolderName,
+      parent_folder_id: parentFolderId,
+      size: 0,
+      storage_path: storagePath,
+      owner_id: userId,
+    },
+  });
+
+  return createdFolder;
 }
 
 async function getUserFileByName(userId, filename) {
@@ -44,4 +84,12 @@ async function createFile(user, file) {
   });
 }
 
-export { createFile, getAllUserFiles, getUserFileByName, getUserFolders };
+export {
+  createFile,
+  createUserFolder,
+  getUserFiles,
+  getUserFileByName,
+  getUserFolders,
+  getUserFolderByName,
+  getUserFolderById,
+};

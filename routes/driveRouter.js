@@ -1,21 +1,27 @@
 import { Router } from "express";
 import { upload } from "../middleware/multerConfig.js";
 import fs from "fs/promises";
+import fsSync from "fs";
 import prismaClient from "../db/prismaClient.js";
 import {
   createFile,
-  getAllUserFiles,
+  getUserFiles,
   getUserFileByName,
   getUserFolders,
+  getUserFolderByName,
+  getUserFolderById,
+  createUserFolder,
 } from "../db/queries.js";
+
 const driveRouter = new Router();
 
 driveRouter.get("/", async (req, res) => {
-  const parentFolderId = req.query.parentFolderId
-    ? req.query.parentFolderId
+  const parentFolderId = req.query.folderId
+    ? req.query.folderId
     : null;
-  const files = await getAllUserFiles(req.user);
+  const files = await getUserFiles(req.user.id, parentFolderId);
   const folders = await getUserFolders(req.user.id, parentFolderId);
+  console.log(folders)
 
   res.render("drive", { files, folders });
 });
@@ -38,8 +44,8 @@ driveRouter.post(
 );
 
 driveRouter.get("/createFolder", (req, res) => {
-  const parentFolderId = req.query.parenFolderId
-    ? req.query.parenFolderId
+  const parentFolderId = req.query.folderId
+    ? req.query.folderId
     : null;
 
   res.render("createFolderForm", { parentFolderId });
@@ -47,16 +53,14 @@ driveRouter.get("/createFolder", (req, res) => {
 
 driveRouter.post("/createFolder", async (req, res) => {
   const newFolderName = req.body.folderName;
-  const parentFolderId = req.query.parenFolderId
-    ? req.query.parenFolderId
+  const parentFolderId = req.query.folderId
+    ? req.query.folderId
     : null;
-  const folderExists = await prismaClient.folders.findFirst({
-    where: {
-      name: newFolderName,
-      owner_id: req.user.id,
-      parent_folder_id: parentFolderId,
-    },
-  });
+  const folderExists = await getUserFolderByName(
+    req.user.id,
+    newFolderName,
+    parentFolderId
+  );
 
   if (folderExists) {
     res.send("createFolderForm", {
@@ -65,23 +69,22 @@ driveRouter.post("/createFolder", async (req, res) => {
     });
   } else {
     const parentStoragePath = parentFolderId
-      ? await prismaClient.folders.findFirst({
-          where: {
-            id: parentFolderId,
-          },
-        })
-      : `storage/${req.user.name}/`;
-    const createdFolder = await prismaClient.folders.create({
-      data: {
-        name: newFolderName,
-        parent_folder_id: parentFolderId,
-        size: 0,
-        storage_path: parentStoragePath + newFolderName,
-        owner_id: req.user.id,
-      },
-    });
+      ? (await getUserFolderById(req.user.id, parentFolderId)).storage_path 
+      : `storage/${req.user.name}`;
+    
+    const newFolderStoragePath = parentStoragePath + "/" + newFolderName;
 
-    await fs.mkdir(parentStoragePath + newFolderName)
+    const createdFolder = await createUserFolder(
+      req.user.id,
+      newFolderName,
+      newFolderStoragePath,
+      parentFolderId
+    );
+
+    fsSync.existsSync(parentStoragePath)
+      ? null
+      : await fs.mkdir(parentStoragePath);
+    await fs.mkdir(newFolderStoragePath);
     console.log(createdFolder);
 
     res.redirect("/myDrive");
