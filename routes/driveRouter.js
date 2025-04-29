@@ -6,7 +6,6 @@ import prismaClient from "../db/prismaClient.js";
 import {
   createFile,
   getUserFiles,
-  getUserFileByName,
   getUserFolders,
   getUserFolderByName,
   getUserFolderById,
@@ -25,17 +24,20 @@ driveRouter.get("/", async (req, res) => {
 });
 
 driveRouter.get("/upload", (req, res) => {
-  res.render("uploadForm");
+  const parentFolderId = req.query.folderId ? req.query.folderId : null;
+  
+  res.render("uploadForm", { folderId: parentFolderId});
 });
 
 driveRouter.post(
   "/upload",
   upload.array("uploaded-files", 5),
   async (req, res) => {
+    const parentFolderId = req.body.folderId ? req.body.folderId : null;
     console.log(req.body);
     console.log(req.files);
     for (let i = 0; i < req.files.length; i++) {
-      await createFile(req.user, req.files[i]);
+      await createFile(req.user, req.files[i], parentFolderId);
     }
     res.send("file recieved");
   }

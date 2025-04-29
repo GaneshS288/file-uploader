@@ -57,11 +57,11 @@ async function createUserFolder(
   return createdFolder;
 }
 
-async function getUserFileByName(userId, filename) {
+async function getUserFileByName(userId, filename, parentFolderId) {
   const file = await prismaClient.files.findFirst({
     where: {
       owner_id: userId,
-      parent_folder_id: null,
+      parent_folder_id: parentFolderId,
       name: {
         contains: filename,
         mode: "insensitive",
@@ -72,13 +72,14 @@ async function getUserFileByName(userId, filename) {
   return file;
 }
 
-async function createFile(user, file) {
+async function createFile(user, file, parent_folder_id = null) {
   await prismaClient.files.create({
     data: {
       name: file.filename,
       type: file.mimetype,
       size: file.size,
       owner_id: user.id,
+      parent_folder_id: parent_folder_id,
       storage_path: file.path,
     },
   });

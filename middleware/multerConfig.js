@@ -1,10 +1,12 @@
 import multer from "multer";
 import fs from "node:fs/promises";
 import fsSync from "fs";
-import { getUserFileByName } from "../db/queries.js";
+import { getUserFileByName, getUserFolderById } from "../db/queries.js";
 
 const storage = multer.diskStorage({
   destination: async (req, file, done) => {
+    const parentFolderId = req.body.folderId ? req.body.folderId : null;
+
     if (!fsSync.existsSync("./storage")) {
       try {
         await fs.mkdir("./storage/");
@@ -19,7 +21,14 @@ const storage = multer.diskStorage({
         console.log(error);
       }
     }
-    done(null, `./storage/${req.user.name}`);
+
+    if(parentFolderId) {
+      const parentFolder = await getUserFolderById(req.user.id, parentFolderId);
+      done(null, parentFolder.storage_path)
+    }
+    else {
+      done(null, `./storage/${req.user.name}`);
+    }  
   },
   filename: async (req, file, done) => {
     done(null, file.originalname);
@@ -27,8 +36,10 @@ const storage = multer.diskStorage({
 });
 
 async function fileFilter(req, file, done) {
+  const parentFolderId = req.body.folderId ? req.body.folderId : null;
+
   try {
-    const fileExists = await getUserFileByName(req.user.id, file.originalname);
+    const fileExists = await getUserFileByName(req.user.id, file.originalname, parentFolderId);
     if (fileExists) {
       console.log(`skipped file ${file.originalname}`);
       req.body.skippedFiles
