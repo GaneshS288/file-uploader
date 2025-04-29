@@ -16,14 +16,12 @@ import {
 const driveRouter = new Router();
 
 driveRouter.get("/", async (req, res) => {
-  const parentFolderId = req.query.folderId
-    ? req.query.folderId
-    : null;
+  const parentFolderId = req.query.folderId ? req.query.folderId : null;
   const files = await getUserFiles(req.user.id, parentFolderId);
   const folders = await getUserFolders(req.user.id, parentFolderId);
-  console.log(folders)
+  console.log(folders);
 
-  res.render("drive", { files, folders });
+  res.render("drive", { files, folders, folderId: parentFolderId });
 });
 
 driveRouter.get("/upload", (req, res) => {
@@ -44,18 +42,14 @@ driveRouter.post(
 );
 
 driveRouter.get("/createFolder", (req, res) => {
-  const parentFolderId = req.query.folderId
-    ? req.query.folderId
-    : null;
+  const parentFolderId = req.query.folderId ? req.query.folderId : null;
 
-  res.render("createFolderForm", { parentFolderId });
+  res.render("createFolderForm", { folderId: parentFolderId });
 });
 
 driveRouter.post("/createFolder", async (req, res) => {
   const newFolderName = req.body.folderName;
-  const parentFolderId = req.query.folderId
-    ? req.query.folderId
-    : null;
+  const parentFolderId = req.body.folderId ? req.body.folderId : null;
   const folderExists = await getUserFolderByName(
     req.user.id,
     newFolderName,
@@ -69,9 +63,9 @@ driveRouter.post("/createFolder", async (req, res) => {
     });
   } else {
     const parentStoragePath = parentFolderId
-      ? (await getUserFolderById(req.user.id, parentFolderId)).storage_path 
+      ? (await getUserFolderById(req.user.id, parentFolderId)).storage_path
       : `storage/${req.user.name}`;
-    
+
     const newFolderStoragePath = parentStoragePath + "/" + newFolderName;
 
     const createdFolder = await createUserFolder(
