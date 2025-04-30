@@ -14,7 +14,7 @@
 
     <% if(folders.length > 0 || files.length > 0) {%>
     <%- include("./partials/folderList.ejs", { folders }) %>
-    <%- include("./partials/fileList.ejs", { files }) %>
+    <%- include("./partials/fileList.ejs", { files, folderId }) %>
     <% } %>
 
     <% if(folders.length === 0 && files.length === 0) { %>

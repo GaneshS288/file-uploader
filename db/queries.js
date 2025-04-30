@@ -73,7 +73,7 @@ async function getUserFileByName(userId, filename, parentFolderId) {
 }
 
 async function createFile(user, file, parent_folder_id = null) {
-  await prismaClient.files.create({
+  const createdFile = await prismaClient.files.create({
     data: {
       name: file.filename,
       type: file.mimetype,
@@ -83,6 +83,20 @@ async function createFile(user, file, parent_folder_id = null) {
       storage_path: file.path,
     },
   });
+
+  return createdFile;
+}
+
+async function deleteUserFileById(userId, fileId, parent_folder_id = null) {
+  const deletedFile = prismaClient.files.delete({
+    where: {
+      owner_id: userId,
+      id: fileId,
+      parent_folder_id: parent_folder_id,
+    },
+  });
+
+  return deletedFile;
 }
 
 export {
@@ -93,4 +107,5 @@ export {
   getUserFolders,
   getUserFolderByName,
   getUserFolderById,
+  deleteUserFileById,
 };

@@ -18,7 +18,12 @@
                 <div class="file-icon-buttons">
                     <button class="icon info-icon" aria-label="info"></button>
                     <button class="icon share-icon" aria-label="share"></button>
-                    <button class="icon delete-icon" aria-label="delete"></button>
+                    <% if(!folderId) { %>
+                        <a class="icon delete-icon" aria-label="delete" href="/myDrive/delete/file?fileId=<%= files[i].id %>"></a>
+                    <% } %>
+                    <% if(folderId) { %>
+                        <a class="icon delete-icon" aria-label="delete" href="/myDrive/delete/file?fileId=<%= files[i].id %>&folderId=<%= folderId %>"></a>    
+                    <% } %>    
                 </div>
             </li>
         <% } %>    
