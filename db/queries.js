@@ -57,6 +57,18 @@ async function createUserFolder(
   return createdFolder;
 }
 
+async function deleteUserFolderById(userId, folderId, parentFolderId = null) {
+  const deletedFolder = await prismaClient.folders.delete({
+    where: {
+      owner_id: userId,
+      id: folderId,
+      parent_folder_id: parentFolderId
+    }
+  })
+
+  return deletedFolder;
+}
+
 async function getUserFileByName(userId, filename, parentFolderId) {
   const file = await prismaClient.files.findFirst({
     where: {
@@ -108,4 +120,5 @@ export {
   getUserFolderByName,
   getUserFolderById,
   deleteUserFileById,
+  deleteUserFolderById,
 };

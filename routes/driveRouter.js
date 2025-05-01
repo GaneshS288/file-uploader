@@ -11,6 +11,7 @@ import {
   getUserFolderById,
   createUserFolder,
   deleteUserFileById,
+  deleteUserFolderById
 } from "../db/queries.js";
 
 const driveRouter = new Router();
@@ -24,13 +25,12 @@ driveRouter.get("/", async (req, res) => {
   res.render("drive", { files, folders, folderId: parentFolderId });
 });
 
-
 //Routes for uploading files
 
 driveRouter.get("/upload", (req, res) => {
   const parentFolderId = req.query.folderId ? req.query.folderId : null;
-  
-  res.render("uploadForm", { folderId: parentFolderId});
+
+  res.render("uploadForm", { folderId: parentFolderId });
 });
 
 driveRouter.post(
@@ -99,19 +99,46 @@ driveRouter.get("/delete/file", async (req, res) => {
   const parentFolderId = req.query.folderId ? req.query.folderId : null;
   const fileId = req.query.fileId;
 
-  if(!fileId) {
+  if (!fileId) {
     res.send("file id not sent");
     return;
   }
 
   try {
-    const deletedFile = await deleteUserFileById(req.user.id, fileId, parentFolderId );
+    const deletedFile = await deleteUserFileById(
+      req.user.id,
+      fileId,
+      parentFolderId
+    );
     await fs.rm(deletedFile.storage_path);
-    res.send(`file name - ${deletedFile.name}, deleted`)
-  }
-  catch(err) {
+    res.send(`file name - ${deletedFile.name}, deleted`);
+  } catch (err) {
     console.log(err);
   }
-})
+});
+
+//routes for deleting folders
+
+driveRouter.get("/delete/folder", async (req, res) => {
+  const parentFolderId = req.query.folderId ? req.query.folderId : null;
+  const currentFolderId = req.query.currentFolderId;
+
+  if (!currentFolderId) {
+    res.send("folder id not sent");
+    return;
+  }
+
+  try {
+    const deletedFolder = await deleteUserFolderById(
+      req.user.id,
+      currentFolderId,
+      parentFolderId
+    );
+    await fs.rm(deletedFolder.storage_path, { recursive: true });
+    res.send(`folder name - ${deletedFolder.name}, deleted`);
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 export default driveRouter;

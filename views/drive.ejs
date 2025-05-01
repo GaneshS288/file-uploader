@@ -13,7 +13,7 @@
     <%- include("./partials/driveNavigationBar.ejs", {pathList: ""}) %>
 
     <% if(folders.length > 0 || files.length > 0) {%>
-    <%- include("./partials/folderList.ejs", { folders }) %>
+    <%- include("./partials/folderList.ejs", { folders, folderId }) %>
     <%- include("./partials/fileList.ejs", { files, folderId }) %>
     <% } %>
 
