@@ -3,6 +3,7 @@ import { upload } from "../middleware/multerConfig.js";
 import fs from "fs/promises";
 import fsSync from "fs";
 import prismaClient from "../db/prismaClient.js";
+import supabaseClient from "../supabase/supabaseConfig.js";
 import {
   createFile,
   getUserFiles,
@@ -11,8 +12,9 @@ import {
   getUserFolderById,
   createUserFolder,
   deleteUserFileById,
-  deleteUserFolderById
+  deleteUserFolderById,
 } from "../db/queries.js";
+import { getAllFilePathsInAFolder } from "../supabase/supabaseHelpers.js";
 
 const driveRouter = new Router();
 
@@ -41,6 +43,10 @@ driveRouter.post(
     console.log(req.body);
     console.log(req.files);
     for (let i = 0; i < req.files.length; i++) {
+      const currentFile = await fs.readFile(req.files[i].path);
+      const { data, error } = await supabaseClient.storage
+        .from("file-storage")
+        .upload(req.files[i].path, currentFile);
       await createFile(req.user, req.files[i], parentFolderId);
     }
     res.send("file recieved");
@@ -111,6 +117,9 @@ driveRouter.get("/delete/file", async (req, res) => {
       parentFolderId
     );
     await fs.rm(deletedFile.storage_path);
+    const { data, error } = await supabaseClient.storage
+      .from("file-storage")
+      .remove([deletedFile.storage_path]);
     res.send(`file name - ${deletedFile.name}, deleted`);
   } catch (err) {
     console.log(err);
@@ -135,6 +144,9 @@ driveRouter.get("/delete/folder", async (req, res) => {
       parentFolderId
     );
     await fs.rm(deletedFolder.storage_path, { recursive: true });
+
+    const filePaths = await getAllFilePathsInAFolder(deletedFolder.storage_path);
+    await supabaseClient.storage.from("file-storage").remove(filePaths);
     res.send(`folder name - ${deletedFolder.name}, deleted`);
   } catch (err) {
     console.log(err);
