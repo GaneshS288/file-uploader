@@ -45,7 +45,7 @@ driveRouter.post(
     for (let i = 0; i < req.files.length; i++) {
       const currentFile = await fs.readFile(req.files[i].path);
       const { data, error } = await supabaseClient.storage
-        .from("file-storage")
+        .from(process.env.SUPABASE_BUCKET_NAME)
         .upload(req.files[i].path, currentFile);
       await createFile(req.user, req.files[i], parentFolderId);
     }
@@ -118,7 +118,7 @@ driveRouter.get("/delete/file", async (req, res) => {
     );
     await fs.rm(deletedFile.storage_path);
     const { data, error } = await supabaseClient.storage
-      .from("file-storage")
+      .from(process.env.SUPABASE_BUCKET_NAME)
       .remove([deletedFile.storage_path]);
     res.send(`file name - ${deletedFile.name}, deleted`);
   } catch (err) {
@@ -145,8 +145,12 @@ driveRouter.get("/delete/folder", async (req, res) => {
     );
     await fs.rm(deletedFolder.storage_path, { recursive: true });
 
-    const filePaths = await getAllFilePathsInAFolder(deletedFolder.storage_path);
-    await supabaseClient.storage.from("file-storage").remove(filePaths);
+    const filePaths = await getAllFilePathsInAFolder(
+      deletedFolder.storage_path
+    );
+    await supabaseClient.storage
+      .from(process.env.SUPABASE_BUCKET_NAME)
+      .remove(filePaths);
     res.send(`folder name - ${deletedFolder.name}, deleted`);
   } catch (err) {
     console.log(err);

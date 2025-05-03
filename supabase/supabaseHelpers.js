@@ -2,7 +2,7 @@ import supabaseClient from "./supabaseConfig.js";
 
 async function getAllFilePathsInAFolder(folderPath, filePathArray = []) {
   const { data, error } = await supabaseClient.storage
-    .from("file-storage")
+    .from(process.env.SUPABASE_BUCKET_NAME)
     .list(folderPath);
   if (error) return error;
 
@@ -18,4 +18,5 @@ async function getAllFilePathsInAFolder(folderPath, filePathArray = []) {
   return filePathArray;
 }
 
+console.log(await getAllFilePathsInAFolder("storage"));
 export { getAllFilePathsInAFolder };
