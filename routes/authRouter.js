@@ -1,14 +1,15 @@
 import { Router } from "express";
 import passport from "../auth/passport_config.js";
 import { createUser } from "../auth/createUser.js";
+import { createSignupValidation } from "../middleware/validation.js";
 
 const authRouter = new Router();
 
 authRouter.get("/signup", (req, res) => {
-  res.render("signup");
+  res.render("signup", { errorMsg: null });
 });
 
-authRouter.post("/signup", createUser);
+authRouter.post("/signup", createSignupValidation(), createUser);
 
 authRouter.get("/login", (req, res) => {
   res.render("login");
@@ -18,7 +19,7 @@ authRouter.post(
   "/login",
   passport.authenticate("local", {
     successRedirect: "/",
-    failureRedirect: "/login",
+    failureRedirect: "/auth/login",
   })
 );
 

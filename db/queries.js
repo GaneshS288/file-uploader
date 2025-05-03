@@ -1,5 +1,13 @@
 import prismaClient from "./prismaClient.js";
 
+async function getUserByName(username) {
+  const user = await prismaClient.users.findFirst({
+    where: { name: { equals: username, mode: "insensitive" } },
+  });
+
+  return user;
+}
+
 async function getUserFiles(userId, parentFolderId) {
   const files = await prismaClient.files.findMany({
     where: { owner_id: userId, parent_folder_id: parentFolderId },
@@ -62,9 +70,9 @@ async function deleteUserFolderById(userId, folderId, parentFolderId = null) {
     where: {
       owner_id: userId,
       id: folderId,
-      parent_folder_id: parentFolderId
-    }
-  })
+      parent_folder_id: parentFolderId,
+    },
+  });
 
   return deletedFolder;
 }
@@ -114,6 +122,7 @@ async function deleteUserFileById(userId, fileId, parent_folder_id = null) {
 export {
   createFile,
   createUserFolder,
+  getUserByName,
   getUserFiles,
   getUserFileByName,
   getUserFolders,

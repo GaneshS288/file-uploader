@@ -18,7 +18,7 @@
             </div>
             <div>
                 <label for="username">Name</label>
-                <input type="text" minlength="4" id="username" name="username" autocomplete="username" required>
+                <input type="text" minlength="4" id="username" name="username" autocomplete="username" required >
             </div>
 
             <div>
@@ -30,6 +30,9 @@
                 <label for="password">Confirm Password</label>
                 <input type="password" minlength="4" id="password-confirm" name="password-confirm" autocomplete="new-password" required>
                 <span class="error confirm-password-error"></span>
+                <% if(errorMsg) {%>
+                <span class="error"><%= errorMsg %></span>
+                <% } %>
             </div>
 
             <div>

@@ -5,6 +5,8 @@ import { validationResult } from "express-validator";
 async function createUser(req, res) {
   const result = validationResult(req);
 
+  console.log(result.array());
+
   if (result.isEmpty()) {
     try {
       const { username, password } = req.body;
@@ -23,7 +25,7 @@ async function createUser(req, res) {
       res.status(504).send("Something went wrong on our end");
     }
   } else {
-    res.send("validation failed please submit proper username and password");
+    res.render("signup", { errorMsg: result.array()[0].msg });
   }
 }
 
