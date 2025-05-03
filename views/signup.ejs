@@ -3,23 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/reset.css">
+    <link rel="stylesheet" href="/signup.css">
+    <script src="/scripts/signup.js" defer></script>
     <title>Sign Up</title>
 </head>
 <body>
-    <form action="./signup" method="post">
+    <form action="/auth/signup" method="post">
         <fieldset>
             <legend>Sign Up</legend>
+
             <div>
-                <label for="username">Name:</label>
+                <p>*username and password must have at least 4 characters</p>
+            </div>
+            <div>
+                <label for="username">Name</label>
                 <input type="text" minlength="4" id="username" name="username" autocomplete="username" required>
             </div>
 
             <div>
-                <label for="password">Password:</label>
-                <input type="text" minlength="4" id="password" name="password" autocomplete="new-password" required>
+                <label for="password">Password</label>
+                <input type="password" minlength="4" id="password" name="password" autocomplete="new-password" required>
             </div>
 
-            <button type="submit">Sign Up</button>
+            <div>
+                <label for="password">Confirm Password</label>
+                <input type="password" minlength="4" id="password-confirm" name="password-confirm" autocomplete="new-password" required>
+                <span class="error confirm-password-error"></span>
+            </div>
+
+            <div>
+                <button type="submit">Sign Up</button>
+                <a href="/" class="cancel-button">Cancel</a>
+            </div>
         </fieldset>
     </form>
 </body>
