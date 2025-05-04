@@ -177,17 +177,47 @@ driveRouter.get("/delete/folder", async (req, res) => {
   }
 });
 
-//routes for file info 
+//routes for file info
 
 driveRouter.get("/info/file", async (req, res) => {
   const fileId = req.query.fileId;
   const folderId = req.query.folderId ? req.query.folderId : null;
 
-  
-
   const file = await getUserFileById(req.user.id, fileId, folderId);
 
-  res.render("fileInfo", {fileId, folderId, file});
-})
+  res.render("fileInfo", { fileId, folderId, file });
+});
 
+//route for downloading file
+
+driveRouter.get("/download/file", async (req, res, next) => {
+  const fileId = req.query.fileId;
+  const folderId = req.query.folderId ? req.query.folderId : null;
+
+  if (!fileId) {
+    throw new Error("this file does not exist");
+  }
+
+  try {
+    const file = await getUserFileById(req.user.id, fileId, folderId);
+    const { data, error } = await supabaseClient.storage
+      .from(process.env.SUPABASE_BUCKET_NAME)
+      .download(file.storage_path);
+
+    if (error) {
+      throw error;
+    }
+    const buffer = await data.arrayBuffer();
+
+    res.setHeader("Content-Disposition", `attachment; filename="${file.name}"`);
+    res.setHeader("Content-Type", file.type);
+
+    res.send(Buffer.from(buffer));
+  } catch (error) {
+    console.log(error);
+    error.code = 504;
+    error.message = "something happened on our end";
+    next(error);
+  }
+});
 export default driveRouter;
