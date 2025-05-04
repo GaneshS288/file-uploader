@@ -18,12 +18,18 @@ import { getAllFilePathsInAFolder } from "../supabase/supabaseHelpers.js";
 const driveRouter = new Router();
 
 driveRouter.get("/", async (req, res) => {
-  const currentFolderId = req.query.folderId ? req.query.folderId : null;
-  const Folder = currentFolderId
-    ? await getUserFolderById(req.user.id, currentFolderId)
-    : null;
-  const folderStoragePath = Folder ? Folder.storage_path : null;
-  const parentFolderId = Folder ? Folder.parent_folder_id ? Folder.parent_folder_id : "root" : null;
+  let currentFolderId, Folder, folderStoragePath, parentFolderId;
+  if (!req.query.folderId) {
+    currentFolderId = null;
+    Folder = null;
+    folderStoragePath = null;
+    parentFolderId = null;
+  } else {
+    currentFolderId = req.query.folderId;
+    Folder = await getUserFolderById(req.user.id, currentFolderId);
+    folderStoragePath = Folder.storage_path;
+    parentFolderId = Folder.parent_folder_id ? Folder.parent_folder_id : "root";
+  }
 
   const files = await getUserFiles(req.user.id, currentFolderId);
   const folders = await getUserFolders(req.user.id, currentFolderId);
@@ -56,9 +62,10 @@ driveRouter.post(
       const currentFile = await fs.readFile(req.files[i].path);
       const { data, error } = await supabaseClient.storage
         .from(process.env.SUPABASE_BUCKET_NAME)
-        .upload(req.files[i].path, currentFile, {contentType: req.files[i].mimetype});
+        .upload(req.files[i].path, currentFile, {
+          contentType: req.files[i].mimetype,
+        });
 
-        console.log(error)
       await createFile(req.user, req.files[i], currentFolderId);
       await fs.rm(req.files[i].path);
     }
