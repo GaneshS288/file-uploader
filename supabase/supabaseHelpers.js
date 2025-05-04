@@ -18,5 +18,4 @@ async function getAllFilePathsInAFolder(folderPath, filePathArray = []) {
   return filePathArray;
 }
 
-console.log(await getAllFilePathsInAFolder("storage"));
 export { getAllFilePathsInAFolder };

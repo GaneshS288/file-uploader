@@ -2,7 +2,6 @@ import { Router } from "express";
 import { upload } from "../middleware/multerConfig.js";
 import fs from "fs/promises";
 import fsSync from "fs";
-import prismaClient from "../db/prismaClient.js";
 import supabaseClient from "../supabase/supabaseConfig.js";
 import {
   createFile,
@@ -22,7 +21,6 @@ driveRouter.get("/", async (req, res) => {
   const parentFolderId = req.query.folderId ? req.query.folderId : null;
   const files = await getUserFiles(req.user.id, parentFolderId);
   const folders = await getUserFolders(req.user.id, parentFolderId);
-  console.log(folders);
 
   res.render("drive", { files, folders, folderId: parentFolderId });
 });
@@ -41,13 +39,14 @@ driveRouter.post(
   async (req, res) => {
     const parentFolderId = req.body.folderId ? req.body.folderId : null;
     console.log(req.body);
-    console.log(req.files);
+
     for (let i = 0; i < req.files.length; i++) {
       const currentFile = await fs.readFile(req.files[i].path);
       const { data, error } = await supabaseClient.storage
         .from(process.env.SUPABASE_BUCKET_NAME)
         .upload(req.files[i].path, currentFile);
       await createFile(req.user, req.files[i], parentFolderId);
+      await fs.rm(req.files[i].path);
     }
     res.send("file recieved");
   }
@@ -93,7 +92,6 @@ driveRouter.post("/createFolder", async (req, res) => {
       ? null
       : await fs.mkdir(parentStoragePath);
     await fs.mkdir(newFolderStoragePath);
-    console.log(createdFolder);
 
     res.redirect("/myDrive");
   }
@@ -116,7 +114,7 @@ driveRouter.get("/delete/file", async (req, res) => {
       fileId,
       parentFolderId
     );
-    await fs.rm(deletedFile.storage_path);
+
     const { data, error } = await supabaseClient.storage
       .from(process.env.SUPABASE_BUCKET_NAME)
       .remove([deletedFile.storage_path]);
