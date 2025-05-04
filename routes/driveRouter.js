@@ -79,7 +79,7 @@ driveRouter.post(
 driveRouter.get("/createFolder", (req, res) => {
   const currentFolderId = req.query.folderId ? req.query.folderId : null;
 
-  res.render("createFolderForm", { folderId: currentFolderId });
+  res.render("createFolderForm", { folderId: currentFolderId, errorMsg: null });
 });
 
 driveRouter.post("/createFolder", async (req, res) => {
@@ -92,9 +92,9 @@ driveRouter.post("/createFolder", async (req, res) => {
   );
 
   if (folderExists) {
-    res.send("createFolderForm", {
-      currentFolderId,
-      error: `This folder ${newFolderName} already exists in current directory`,
+    res.render("createFolderForm", {
+      folderId : currentFolderId,
+      errorMsg: `This folder ${newFolderName} already exists in current directory`,
     });
   } else {
     const parentStoragePath = currentFolderId

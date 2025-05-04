@@ -40,7 +40,10 @@ async function getUserFolders(userId, parentFolderId) {
 async function getUserFolderByName(userId, folderName, parentFolderId) {
   const folder = await prismaClient.folders.findFirst({
     where: {
-      name: folderName,
+      name: {
+        equals: folderName,
+        mode: "insensitive"
+      },
       owner_id: userId,
       parent_folder_id: parentFolderId,
     },
