@@ -15,6 +15,8 @@ import {
   getUserFileById,
 } from "../db/queries.js";
 import { getAllFilePathsInAFolder } from "../supabase/supabaseHelpers.js";
+import { createFolderNameValidation } from "../middleware/validation.js";
+import { validationResult } from "express-validator";
 
 const driveRouter = new Router();
 
@@ -82,42 +84,58 @@ driveRouter.get("/createFolder", (req, res) => {
   res.render("createFolderForm", { folderId: currentFolderId, errorMsg: null });
 });
 
-driveRouter.post("/createFolder", async (req, res) => {
-  const newFolderName = req.body.folderName;
-  const currentFolderId = req.body.folderId ? req.body.folderId : null;
-  const folderExists = await getUserFolderByName(
-    req.user.id,
-    newFolderName,
-    currentFolderId
-  );
+driveRouter.post(
+  "/createFolder",
+  createFolderNameValidation(),
+  async (req, res) => {
+    const newFolderName = req.body.folderName;
+    const currentFolderId = req.body.folderId ? req.body.folderId : null;
 
-  if (folderExists) {
-    res.render("createFolderForm", {
-      folderId : currentFolderId,
-      errorMsg: `This folder ${newFolderName} already exists in current directory`,
-    });
-  } else {
-    const parentStoragePath = currentFolderId
-      ? (await getUserFolderById(req.user.id, currentFolderId)).storage_path
-      : `storage/${req.user.name}`;
+    const result = validationResult(req);
 
-    const newFolderStoragePath = parentStoragePath + "/" + newFolderName;
+    if (!result.isEmpty()) {
+      return res.render("createFolderForm", {
+        folderId: currentFolderId,
+        errorMsg: result.array()[0].msg,
+      });
+    }
 
-    const createdFolder = await createUserFolder(
+    const folderExists = await getUserFolderByName(
       req.user.id,
       newFolderName,
-      newFolderStoragePath,
       currentFolderId
     );
 
-    fsSync.existsSync(parentStoragePath)
-      ? null
-      : await fs.mkdir(parentStoragePath);
-    await fs.mkdir(newFolderStoragePath);
+    if (folderExists) {
+      res.render("createFolderForm", {
+        folderId: currentFolderId,
+        errorMsg: `This folder ${newFolderName} already exists in current directory`,
+      });
 
-    res.redirect("/myDrive");
+      return;
+    } else {
+      const parentStoragePath = currentFolderId
+        ? (await getUserFolderById(req.user.id, currentFolderId)).storage_path
+        : `storage/${req.user.name}`;
+
+      const newFolderStoragePath = parentStoragePath + "/" + newFolderName;
+
+      const createdFolder = await createUserFolder(
+        req.user.id,
+        newFolderName,
+        newFolderStoragePath,
+        currentFolderId
+      );
+
+      fsSync.existsSync(parentStoragePath)
+        ? null
+        : await fs.mkdir(parentStoragePath);
+      await fs.mkdir(newFolderStoragePath);
+
+      res.redirect("/myDrive");
+    }
   }
-});
+);
 
 //routes for deleting files
 

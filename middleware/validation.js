@@ -34,4 +34,8 @@ function createSignupValidation() {
   ];
 }
 
-export { createSignupValidation };
+function createFolderNameValidation() {
+  return [body("folderName").notEmpty().isAlphanumeric().withMessage("folder name cannot contain any special characters(eg @$#), spaces or be empty")]
+}
+
+export { createSignupValidation, createFolderNameValidation };
