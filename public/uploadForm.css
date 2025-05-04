@@ -79,3 +79,11 @@ button:hover {
 .cancel-button:hover, .choose-file-label:hover {
     background-color: var(--button-box-shadow-color);
 }
+
+.file {
+    font-size: 1.2rem;
+}
+
+.error {
+    color: var(--light-red-color);
+}
