@@ -16,6 +16,16 @@ async function getUserFiles(userId, parentFolderId) {
   return files;
 }
 
+async function getUserFileById(userId, fileId, parentFolderId) {
+  const file = await prismaClient.files.findFirst({where: {
+    owner_id: userId,
+    id: fileId,
+    parent_folder_id: parentFolderId
+  }})
+
+  return file;
+}
+
 async function getUserFolders(userId, parentFolderId) {
   const folders = await prismaClient.folders.findMany({
     where: {
@@ -124,6 +134,7 @@ export {
   createUserFolder,
   getUserByName,
   getUserFiles,
+  getUserFileById,
   getUserFileByName,
   getUserFolders,
   getUserFolderByName,

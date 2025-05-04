@@ -12,6 +12,7 @@ import {
   createUserFolder,
   deleteUserFileById,
   deleteUserFolderById,
+  getUserFileById,
 } from "../db/queries.js";
 import { getAllFilePathsInAFolder } from "../supabase/supabaseHelpers.js";
 
@@ -175,5 +176,18 @@ driveRouter.get("/delete/folder", async (req, res) => {
     console.log(err);
   }
 });
+
+//routes for file info 
+
+driveRouter.get("/info/file", async (req, res) => {
+  const fileId = req.query.fileId;
+  const folderId = req.query.folderId ? req.query.folderId : null;
+
+  
+
+  const file = await getUserFileById(req.user.id, fileId, folderId);
+
+  res.render("fileInfo", {fileId, folderId, file});
+})
 
 export default driveRouter;

@@ -16,12 +16,14 @@
                 </div>
                 <span class="file-created-at"><%= files[i].created_at.toDateString() %></span>
                 <div class="file-icon-buttons">
-                    <button class="icon info-icon" aria-label="info"></button>
+                    
                     <button class="icon share-icon" aria-label="share"></button>
                     <% if(!folderId) { %>
+                        <a class="icon info-icon" aria-label="info" href="/myDrive/info/file?fileId=<%= files[i].id %>"></button>
                         <a class="icon delete-icon" aria-label="delete" href="/myDrive/delete/file?fileId=<%= files[i].id %>"></a>
                     <% } %>
                     <% if(folderId) { %>
+                        <a class="icon info-icon" aria-label="info" href="/myDrive/info/file?fileId=<%= files[i].id %>&folderId=<%= folderId%>"> </a>
                         <a class="icon delete-icon" aria-label="delete" href="/myDrive/delete/file?fileId=<%= files[i].id %>&folderId=<%= folderId %>"></a>    
                     <% } %>    
                 </div>

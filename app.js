@@ -51,12 +51,12 @@ app.use("/*splat", (req, res) => {
   res.render("errorPage", { error });
 });
 
-app.use((req, res, next, err) => {
+app.use((err, req, res, next) => {
   const error = err;
   error.code = error.code || 404;
   error.message = error.message || "This resource does not exist";
 
-  res.render("errorPage", { error });
+  res.status(error.code).render("errorPage", { error });
 });
 
 app.listen(8080, () => console.log("Server listening at port 8080"));

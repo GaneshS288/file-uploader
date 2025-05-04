@@ -37,10 +37,10 @@ fileInput.addEventListener("change", (event) => {
     const fileElement = document.createElement("p");
 
     if (isValid) {
-      fileInput.setCustomValidity("errors with files");
       fileElement.classList.add("file");
       fileElement.textContent = `${file.name}`;
     } else {
+      fileInput.setCustomValidity("errors with files");
       const isMimeTypeValid = validateMimeType(file);
       const isSizeValid = validateSize(file);
 
