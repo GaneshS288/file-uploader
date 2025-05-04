@@ -47,3 +47,13 @@ div.file-icon-buttons > .icon:hover {
 .open-icon {
     background-image: url(./icons/open.svg);
 }
+
+.back-icon {
+    background-image: url(./icons/back.svg);
+    width: 40px;
+    height: 40px;
+}
+
+.back-icon:hover {
+    background-color: gainsboro;
+}

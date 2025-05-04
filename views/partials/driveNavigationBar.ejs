@@ -1,8 +1,22 @@
 <nav>
     <ul class="drive-navigation-list">
-        <li><a href="/myDrive" class="drive-nav-link">My Drive/</a></li>
-        <% for(let i = 0; i < pathList.length; i ++) {%>
-            <li><a href="/myDrive/<%= pathList[i].folderId %>" class="drive-nav-link"><% pathList[i].folderName %></a></li>
-         <% } %>   
+        <li><a href="/myDrive" class="drive-nav-link">My Drive ></a> </li>
+        <% if(path) {%>
+        <% for(let i = 2; i <= path.split("/").length - 1; i ++) {%>
+            <% if(i === path.split("/").length - 1) {%>
+            <li><span class="drive-nav-link"><%= path.split("/")[i] %></span></li>
+            <% } %>
+            <% if(i < path.split("/").length - 1) { %>
+            <li><span class="drive-nav-link"><%= path.split("/")[i] %> ></span></li>
+            <% } %>
+         <% } %> 
+         <% } %>
+
+         <% if(parentFolderId === "root" && parentFolderId !== null) {%>
+         <li style="padding-left: 1rem;"><a href="/myDrive" class="icon back-icon"></a> </li>  
+         <% } %>
+         <% if(parentFolderId !== "root" && parentFolderId !== null) {%>
+            <li style="padding-left: 1rem;"><a href="/myDrive?folderId=<%= parentFolderId %>" class="icon back-icon"></a> </li>  
+         <% } %>
     </ul>
 </nav>

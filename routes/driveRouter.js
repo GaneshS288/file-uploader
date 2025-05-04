@@ -18,34 +18,48 @@ import { getAllFilePathsInAFolder } from "../supabase/supabaseHelpers.js";
 const driveRouter = new Router();
 
 driveRouter.get("/", async (req, res) => {
-  const parentFolderId = req.query.folderId ? req.query.folderId : null;
-  const files = await getUserFiles(req.user.id, parentFolderId);
-  const folders = await getUserFolders(req.user.id, parentFolderId);
+  const currentFolderId = req.query.folderId ? req.query.folderId : null;
+  const Folder = currentFolderId
+    ? await getUserFolderById(req.user.id, currentFolderId)
+    : null;
+  const folderStoragePath = Folder ? Folder.storage_path : null;
+  const parentFolderId = Folder ? Folder.parent_folder_id ? Folder.parent_folder_id : "root" : null;
 
-  res.render("drive", { files, folders, folderId: parentFolderId });
+  const files = await getUserFiles(req.user.id, currentFolderId);
+  const folders = await getUserFolders(req.user.id, currentFolderId);
+
+  res.render("drive", {
+    files,
+    folders,
+    folderId: currentFolderId,
+    path: folderStoragePath,
+    parentFolderId,
+  });
 });
 
 //Routes for uploading files
 
 driveRouter.get("/upload", (req, res) => {
-  const parentFolderId = req.query.folderId ? req.query.folderId : null;
+  const currentFolderId = req.query.folderId ? req.query.folderId : null;
 
-  res.render("uploadForm", { folderId: parentFolderId });
+  res.render("uploadForm", { folderId: currentFolderId });
 });
 
 driveRouter.post(
   "/upload",
   upload.array("uploaded-files", 5),
   async (req, res) => {
-    const parentFolderId = req.body.folderId ? req.body.folderId : null;
+    const currentFolderId = req.body.folderId ? req.body.folderId : null;
     console.log(req.body);
 
     for (let i = 0; i < req.files.length; i++) {
       const currentFile = await fs.readFile(req.files[i].path);
       const { data, error } = await supabaseClient.storage
         .from(process.env.SUPABASE_BUCKET_NAME)
-        .upload(req.files[i].path, currentFile);
-      await createFile(req.user, req.files[i], parentFolderId);
+        .upload(req.files[i].path, currentFile, {contentType: req.files[i].mimetype});
+
+        console.log(error)
+      await createFile(req.user, req.files[i], currentFolderId);
       await fs.rm(req.files[i].path);
     }
     res.send("file recieved");
@@ -55,28 +69,28 @@ driveRouter.post(
 //routes for creating folders
 
 driveRouter.get("/createFolder", (req, res) => {
-  const parentFolderId = req.query.folderId ? req.query.folderId : null;
+  const currentFolderId = req.query.folderId ? req.query.folderId : null;
 
-  res.render("createFolderForm", { folderId: parentFolderId });
+  res.render("createFolderForm", { folderId: currentFolderId });
 });
 
 driveRouter.post("/createFolder", async (req, res) => {
   const newFolderName = req.body.folderName;
-  const parentFolderId = req.body.folderId ? req.body.folderId : null;
+  const currentFolderId = req.body.folderId ? req.body.folderId : null;
   const folderExists = await getUserFolderByName(
     req.user.id,
     newFolderName,
-    parentFolderId
+    currentFolderId
   );
 
   if (folderExists) {
     res.send("createFolderForm", {
-      parentFolderId,
+      currentFolderId,
       error: `This folder ${newFolderName} already exists in current directory`,
     });
   } else {
-    const parentStoragePath = parentFolderId
-      ? (await getUserFolderById(req.user.id, parentFolderId)).storage_path
+    const parentStoragePath = currentFolderId
+      ? (await getUserFolderById(req.user.id, currentFolderId)).storage_path
       : `storage/${req.user.name}`;
 
     const newFolderStoragePath = parentStoragePath + "/" + newFolderName;
@@ -85,7 +99,7 @@ driveRouter.post("/createFolder", async (req, res) => {
       req.user.id,
       newFolderName,
       newFolderStoragePath,
-      parentFolderId
+      currentFolderId
     );
 
     fsSync.existsSync(parentStoragePath)
@@ -100,7 +114,7 @@ driveRouter.post("/createFolder", async (req, res) => {
 //routes for deleting files
 
 driveRouter.get("/delete/file", async (req, res) => {
-  const parentFolderId = req.query.folderId ? req.query.folderId : null;
+  const currentFolderId = req.query.folderId ? req.query.folderId : null;
   const fileId = req.query.fileId;
 
   if (!fileId) {
@@ -112,7 +126,7 @@ driveRouter.get("/delete/file", async (req, res) => {
     const deletedFile = await deleteUserFileById(
       req.user.id,
       fileId,
-      parentFolderId
+      currentFolderId
     );
 
     const { data, error } = await supabaseClient.storage

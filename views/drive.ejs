@@ -10,7 +10,7 @@
 </head>
 <body>
     <%- include("./partials/driveHeader.ejs", {name : "Ganesh"}) %>
-    <%- include("./partials/driveNavigationBar.ejs", {pathList: ""}) %>
+    <%- include("./partials/driveNavigationBar.ejs", { path, parentFolderId }) %>
 
     <% if(folders.length > 0 || files.length > 0) {%>
     <%- include("./partials/folderList.ejs", { folders, folderId }) %>
