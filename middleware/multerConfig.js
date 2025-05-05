@@ -66,4 +66,8 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
+if(!fsSync.existsSync("storage")) {
+  await fs.mkdir("storage");
+}
+
 export { upload };
