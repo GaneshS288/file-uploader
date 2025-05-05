@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/reset.css">
+    <link rel="stylesheet" href="/signup.css">
     <title>Login</title>
 </head>
 <body>
@@ -16,10 +18,19 @@
 
             <div>
                 <label for="password">Password:</label>
-                <input type="text" minlength="4" id="password" name="password" autocomplete="current-password" required>
+                <input type="password" minlength="4" id="password" name="password" autocomplete="current-password" required>
             </div>
 
-            <button type="submit">Login</button>
+            <div>
+                <% if(errorMsg) {%>
+                    <span class="error"><%= errorMsg %></span>
+                <% } %>
+            </div>
+            
+            <div>
+                <button type="submit">Login</button>
+                <a href="/" class="cancel-button">Cancel</a>
+            </div>
         </fieldset>
     </form>
 </body>

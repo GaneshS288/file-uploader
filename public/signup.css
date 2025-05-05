@@ -55,7 +55,6 @@ fieldset > div {
 }
 
 fieldset > div:last-child {
-    align-items: center;
     padding-top: 2rem;
 }
 

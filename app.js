@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import expressSession from "express-session";
+import flash from "connect-flash"
 import passport from "./auth/passport_config.js";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import prismaClient from "./db/prismaClient.js";
@@ -30,6 +31,7 @@ app.use(
     },
   })
 );
+app.use(flash());
 app.use(passport.session());
 
 app.use("/auth", authRouter);

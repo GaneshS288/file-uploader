@@ -6,8 +6,7 @@ import { createSignupValidation } from "../middleware/validation.js";
 const authRouter = new Router();
 
 authRouter.use((req, res, next) => {
-  console.log(req)
-  if (req.isAuthenticated() && req.originalUrl !== '/auth/logout') {
+  if (req.isAuthenticated() && req.originalUrl !== "/auth/logout") {
     res.redirect("/");
   } else {
     next();
@@ -21,7 +20,10 @@ authRouter.get("/signup", (req, res) => {
 authRouter.post("/signup", createSignupValidation(), createUser);
 
 authRouter.get("/login", (req, res) => {
-  res.render("login");
+  let failureMessage = req.flash();
+  //this is neccessary because calling req.flash once will eject the message
+  failureMessage = failureMessage.error ? failureMessage.error[0] : null;
+  res.render("login", {errorMsg: failureMessage});
 });
 
 authRouter.post(
@@ -29,6 +31,7 @@ authRouter.post(
   passport.authenticate("local", {
     successRedirect: "/",
     failureRedirect: "/auth/login",
+    failureFlash: true,
   })
 );
 
