@@ -57,3 +57,11 @@ div.file-icon-buttons > .icon:hover {
 .back-icon:hover {
     background-color: gainsboro;
 }
+
+.text-icon {
+    background-image: url(./icons/txt.svg);
+}
+
+.video-icon {
+    background-image: url(./icons/video.svg);
+}

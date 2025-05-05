@@ -137,3 +137,18 @@ body {
   }
 }
 
+.empty-drive-message-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.empty-drive-message-section > img {
+  width: 100px;
+  height: 100px;
+}
+
+.empty-drive-message-section > p {
+  font-size: 2rem;
+}
