@@ -54,6 +54,7 @@ app.use("/*splat", (req, res) => {
 
 app.use((err, req, res, next) => {
   const error = err;
+  console.log(error);
   error.code = error.code || 404;
   error.message = error.message || "This resource does not exist";
 
