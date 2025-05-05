@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/reset.css" />
+    <style>
+      body {
+        display: grid;
+        grid-template-columns: minmax(auto, 400px);
+        place-content: center;
+        min-height: 100vh;
+        font-family:
+          "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+        color: var(--primary-light-text-color);
+        font-size: 1.2rem;
+        padding: 1rem;
+      }
+
+      main {
+        display: grid;
+        row-gap: 2rem;
+      }
+
+      main > div {
+        display: flex;
+      }
+
+      div > p {
+        flex: 1;
+      }
+
+      div > a {
+        padding: 1rem 2rem;
+        font: inherit;
+        font-weight: 700;
+        text-decoration: none;
+        color: black;
+        border-radius: 5px;
+      }
+
+      div:last-child {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+      }
+
+      div > a:last-child {
+        border: 2px solid black;
+      }
+
+      div > a:last-child:hover {
+        background-color: gainsboro;
+      }
+
+      .share-url-container {
+        display: flex;
+        gap: 1rem;
+        border: 1px solid black;
+        padding: 5px;
+        border-radius: 5px;
+      }
+
+      .share-url-container > input {
+        flex: 1;
+        font-size: inherit;
+        min-height: 50px;
+        max-width: 300px;
+        overflow-x: scroll;
+        white-space: nowrap;
+        border: none;
+      }
+
+      .copy-button {
+        border: 2px solid black;
+        padding: 8px 16px;
+        font-size: 1.2rem;
+        border-radius: 5px;
+        background-color: white;
+      }
+
+      .copy-button:hover {
+        background-color: gainsboro;
+      }
+
+      .copy-notification {
+        justify-content: center;
+      }
+    </style>
+    <title>File</title>
+  </head>
+  <body>
+    <main>
+      <div>
+        <p>Filename</p>
+        <p><%= file.name %></p>
+      </div>
+
+      <div>
+        <p>size</p>
+        <p><%= Number.parseInt(file.size / 1024) %>KB</p>
+      </div>
+
+      <div>
+        <p>Uploaded On</p>
+        <p><%= file.created_at.toDateString() %></p>
+      </div>
+
+      <div>
+        <p>Type</p>
+        <p><%= file.type %></p>
+      </div>
+
+      <div>
+        <p style="text-align: center;">This link is valid for 24 hours</p>
+      </div>
+
+      <div class="share-url-container">
+        <input type="text" readonly value="<%= signedUrl %>" id="file-link">
+        <button class="copy-button">copy</button>
+      </div>
+
+      <div class="copy-notification"></div>
+
+      <div>
+        <a href="/myDrive?folderId=<%= folderId %>">Back</a>
+      </div>
+    </main>
+
+    <script>
+        const input = document.getElementById("file-link");
+        const copyButton = document.querySelector(".copy-button");
+        const copyNotification = document.querySelector(".copy-notification");
+
+        async function copyLinkToClipBoard() {
+            try {
+                await navigator.clipboard.writeText(input.value);
+                copyNotification.textContent = "Copied to clipboard!";
+
+                setTimeout(() => {
+                    copyNotification.textContent = "";
+                }, 2000)
+            }
+            catch(err) {
+                console.log(err);
+                console.log("failed to copy")
+            }
+        }
+
+        copyButton.addEventListener("click", copyLinkToClipBoard);
+    </script>
+  </body>
+</html>

@@ -162,19 +162,24 @@ driveRouter.post(
         : await fs.mkdir(parentStoragePath);
       await fs.mkdir(newFolderStoragePath);
 
-      res.redirect("/myDrive");
+      if (currentFolderId) {
+        res.redirect(`/myDrive?folderId=${currentFolderId}`);
+      } else {
+        res.redirect("/myDrive");
+      }
     }
   }
 );
 
 //routes for deleting files
 
-driveRouter.get("/delete/file", async (req, res) => {
+driveRouter.get("/delete/file", async (req, res, next) => {
   const currentFolderId = req.query.folderId ? req.query.folderId : null;
   const fileId = req.query.fileId;
 
   if (!fileId) {
-    res.send("file id not sent");
+    const error = new Error("This file does not exist");
+    next(error);
     return;
   }
 
@@ -188,20 +193,29 @@ driveRouter.get("/delete/file", async (req, res) => {
     const { data, error } = await supabaseClient.storage
       .from(process.env.SUPABASE_BUCKET_NAME)
       .remove([deletedFile.storage_path]);
-    res.send(`file name - ${deletedFile.name}, deleted`);
+
+    if (currentFolderId) {
+      res.redirect(`/myDrive?folderId=${currentFolderId}`);
+    } else {
+      res.redirect("/myDrive");
+    }
   } catch (err) {
     console.log(err);
+    err.code = 504;
+    err.message = "Something went wrong on our end";
+    next(err);
   }
 });
 
 //routes for deleting folders
 
-driveRouter.get("/delete/folder", async (req, res) => {
+driveRouter.get("/delete/folder", async (req, res, next) => {
   const parentFolderId = req.query.folderId ? req.query.folderId : null;
   const currentFolderId = req.query.currentFolderId;
 
   if (!currentFolderId) {
-    res.send("folder id not sent");
+    const error = new Error("This file does not exist");
+    next(error);
     return;
   }
 
@@ -219,9 +233,17 @@ driveRouter.get("/delete/folder", async (req, res) => {
     await supabaseClient.storage
       .from(process.env.SUPABASE_BUCKET_NAME)
       .remove(filePaths);
-    res.send(`folder name - ${deletedFolder.name}, deleted`);
+
+    if (parentFolderId) {
+      res.redirect(`/myDrive?folderId=${parentFolderId}`);
+    } else {
+      res.redirect("/myDrive");
+    }
   } catch (err) {
     console.log(err);
+    err.code = 504;
+    err.message = "Something went wrong on our end";
+    next(err);
   }
 });
 
@@ -265,6 +287,38 @@ driveRouter.get("/download/file", async (req, res, next) => {
     console.log(error);
     error.code = 504;
     error.message = "something happened on our end";
+    next(error);
+  }
+});
+
+//route for sharing files
+
+driveRouter.get("/share/file", async (req, res, next) => {
+  const fileId = req.query.fileId;
+  const folderId = req.query.folderId ? req.query.folderId : null;
+
+  if (!fileId) {
+    throw new Error("this file does not exist");
+  }
+
+  try {
+    const file = await getUserFileById(req.user.id, fileId, folderId);
+    const { data, error } = await supabaseClient.storage
+      .from(process.env.SUPABASE_BUCKET_NAME)
+      .createSignedUrl(file.storage_path, 60 * 60 * 24, { download: true });
+
+    if (error) throw error;
+
+    res.render("shareFile", {
+      fileId,
+      folderId,
+      signedUrl: data.signedUrl,
+      file,
+    });
+  } catch (error) {
+    console.log(error);
+    error.code = 504;
+    error.message = "Something happened on our end";
     next(error);
   }
 });
