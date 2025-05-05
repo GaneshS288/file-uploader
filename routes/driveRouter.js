@@ -20,6 +20,15 @@ import { validationResult } from "express-validator";
 
 const driveRouter = new Router();
 
+driveRouter.use((req, res, next) => {
+  if(req.isAuthenticated()) {
+    next();
+  }
+  else {
+    res.redirect("/");
+  }
+})
+
 driveRouter.get("/", async (req, res) => {
   let currentFolderId, Folder, folderStoragePath, parentFolderId;
   if (!req.query.folderId) {

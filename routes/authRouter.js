@@ -5,6 +5,15 @@ import { createSignupValidation } from "../middleware/validation.js";
 
 const authRouter = new Router();
 
+authRouter.use((req, res, next) => {
+  console.log(req)
+  if (req.isAuthenticated() && req.originalUrl !== '/auth/logout') {
+    res.redirect("/");
+  } else {
+    next();
+  }
+});
+
 authRouter.get("/signup", (req, res) => {
   res.render("signup", { errorMsg: null });
 });
