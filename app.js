@@ -37,7 +37,6 @@ app.use("/myDrive", driveRouter);
 
 app.get("/", (req, res) => {
   const authenticated = req.isAuthenticated();
-  console.log(authenticated);
   console.log(req.user);
 
   res.render("home", { authenticated });

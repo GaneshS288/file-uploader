@@ -3,19 +3,52 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/reset.css">
+    <link rel="stylesheet" href="/home.css">
     <title>Home</title>
   </head>
   <body>
-    <h1>
-      welcome to home! You are <%= authenticated ? "Authenticated" :
-      "Unautheticated" %>
-    </h1>
+    <header>
+      <h1>
+        File Uploader
+      </h1>
+      <nav>
+        <% if(!authenticated) {%>
+        <ul class="home-nav-list">
+          <li>
+            <a href="/auth/signup" class="home-button">Signup</a>
+          </li>
+          <li>
+            <a href="/auth/login" class="home-button">Login</a>
+          </li>
+        </ul>
+        <% } %>
+        <% if(authenticated) {%>
+            <a href="/myDrive" class="home-button">Open Drive</a>
+        <% } %>
+      </nav>
+    </header>
 
-    <ul>
-      <li>
-        <a href="/auth/signup">Signup</a><a href="/auth/login">Login</a
-        ><a href="/auth/logout">Logout</a>
-      </li>
-    </ul>
+    <section class="card-container">
+      <div class="card">
+          <h2>Free Signup</h2>
+          <p>Signup is free! just enter a username and password to get Started.</p>
+      </div>
+
+      <div class="card">
+        <h2>Free upload</h2>
+        <p>Upload files up to 5MB in sizes</p>
+    </div>
+
+    <div class="card">
+      <h2>Folders</h2>
+      <p>Organize your files in folders, create as many as you want</p>
+    </div>
+  
+    <div class="card">
+      <h2>Shareable links</h2>
+      <p>Create shareale links to you file that will be valid for 24 hours.</p>
+  </div>
+    </section>
   </body>
 </html>
