@@ -21,13 +21,12 @@ import { validationResult } from "express-validator";
 const driveRouter = new Router();
 
 driveRouter.use((req, res, next) => {
-  if(req.isAuthenticated()) {
+  if (req.isAuthenticated()) {
     next();
-  }
-  else {
+  } else {
     res.redirect("/");
   }
-})
+});
 
 driveRouter.get("/", async (req, res) => {
   let currentFolderId, Folder, folderStoragePath, parentFolderId;
@@ -60,7 +59,7 @@ driveRouter.get("/", async (req, res) => {
 driveRouter.get("/upload", (req, res) => {
   const currentFolderId = req.query.folderId ? req.query.folderId : null;
 
-  res.render("uploadForm", { folderId: currentFolderId });
+  res.render("uploadForm", { folderId: currentFolderId, errorMsg: null });
 });
 
 driveRouter.post(
@@ -68,7 +67,20 @@ driveRouter.post(
   upload.array("uploaded-files", 5),
   async (req, res) => {
     const currentFolderId = req.body.folderId ? req.body.folderId : null;
-    console.log(req.body);
+
+    if (req.body.invalidFiles) {
+      return res.render("uploadForm", {
+        folderId: currentFolderId,
+        errorMsg: `These files have invalid file format - ${req.body.invalidFiles.join(", ")}`,
+      });
+    } else if (req.body.skippedFiles) {
+      const filesNames = req.body.skippedFiles.map((file) => file.originalname);
+      return res.render("uploadForm", {
+        folderId: currentFolderId,
+        errorMsg: `These files already exist - ${filesNames.join(", ")}
+         rejecting all files please upload again`,
+      });
+    }
 
     for (let i = 0; i < req.files.length; i++) {
       const currentFile = await fs.readFile(req.files[i].path);
@@ -78,10 +90,19 @@ driveRouter.post(
           contentType: req.files[i].mimetype,
         });
 
+      if (error) {
+        throw error;
+      }
+
       await createFile(req.user, req.files[i], currentFolderId);
       await fs.rm(req.files[i].path);
     }
-    res.send("file recieved");
+
+    if (currentFolderId) {
+      res.redirect(`/myDrive?folderId=${currentFolderId}`);
+    } else {
+      res.redirect("/myDrive");
+    }
   }
 );
 

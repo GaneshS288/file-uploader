@@ -15,7 +15,7 @@
         <div>
           <p>*Allowed filetypes - .jpg, .png , .jpeg, .txt, .mp4</p>
           <p>
-            *File size Limit - Any File can't be larger than 10 MB and you can't
+            *File size Limit - Any File can't be larger than 5 MB and you can't
             upload more than 5 files at once
           </p>
         </div>
@@ -23,6 +23,12 @@
         <div class="error-container">
           <h2>Files</h2>
         </div>
+
+        <% if(errorMsg) {%>
+          <div>
+            <p class="server-error"><%= errorMsg %> </p>
+          </div>
+        <% } %>
 
         <div class="label-and-button-container">
   

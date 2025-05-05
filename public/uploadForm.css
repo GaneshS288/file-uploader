@@ -87,3 +87,7 @@ button:hover {
 .error {
     color: var(--light-red-color);
 }
+
+.server-error {
+    color: var(--light-red-color);
+}

@@ -2,6 +2,7 @@ import multer from "multer";
 import fs from "node:fs/promises";
 import fsSync from "fs";
 import { getUserFileByName, getUserFolderById } from "../db/queries.js";
+import { checkValidMimeType } from "./validation.js";
 
 const storage = multer.diskStorage({
   destination: async (req, file, done) => {
@@ -22,13 +23,12 @@ const storage = multer.diskStorage({
       }
     }
 
-    if(parentFolderId) {
+    if (parentFolderId) {
       const parentFolder = await getUserFolderById(req.user.id, parentFolderId);
-      done(null, parentFolder.storage_path)
-    }
-    else {
+      done(null, parentFolder.storage_path);
+    } else {
       done(null, `./storage/${req.user.name}`);
-    }  
+    }
   },
   filename: async (req, file, done) => {
     done(null, file.originalname);
@@ -38,13 +38,21 @@ const storage = multer.diskStorage({
 async function fileFilter(req, file, done) {
   const parentFolderId = req.body.folderId ? req.body.folderId : null;
 
+  const isValidType = checkValidMimeType(file, req);
+
   try {
-    const fileExists = await getUserFileByName(req.user.id, file.originalname, parentFolderId);
+    const fileExists = await getUserFileByName(
+      req.user.id,
+      file.originalname,
+      parentFolderId
+    );
     if (fileExists) {
       console.log(`skipped file ${file.originalname}`);
       req.body.skippedFiles
         ? req.body.skippedFiles.push(file)
         : (req.body.skippedFiles = [file]);
+      done(null, false);
+    } else if (!isValidType) {
       done(null, false);
     } else done(null, true);
   } catch (error) {
@@ -54,7 +62,7 @@ async function fileFilter(req, file, done) {
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 1024 * 1024 * 5}, //5MB
+  limits: { fileSize: 1024 * 1024 * 5 }, //5MB
   fileFilter: fileFilter,
 });
 

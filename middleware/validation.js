@@ -35,7 +35,38 @@ function createSignupValidation() {
 }
 
 function createFolderNameValidation() {
-  return [body("folderName").notEmpty().isAlphanumeric().withMessage("folder name cannot contain any special characters(eg @$#), spaces or be empty")]
+  return [
+    body("folderName")
+      .notEmpty()
+      .isAlphanumeric()
+      .withMessage(
+        "folder name cannot contain any special characters(eg @$#), spaces or be empty"
+      ),
+  ];
 }
 
-export { createSignupValidation, createFolderNameValidation };
+function checkValidMimeType(file, req) {
+  const validMimeTypes = [
+    "image/png",
+    "image/jpg",
+    "image/jpeg",
+    "text/plain",
+    "video/mp4",
+  ];
+  const isFileValid = validMimeTypes.includes(file.mimetype);
+
+  if (isFileValid) {
+    return true;
+  } else {
+    req.body.invalidFiles
+      ? req.body.invalidFiles.push(file.originalname)
+      : (req.body.invalidFiles = [file.originalname]);
+    return false;
+  }
+}
+
+export {
+  createSignupValidation,
+  createFolderNameValidation,
+  checkValidMimeType,
+};
