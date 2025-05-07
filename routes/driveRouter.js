@@ -51,6 +51,7 @@ driveRouter.get("/", async (req, res) => {
     folderId: currentFolderId,
     path: folderStoragePath,
     parentFolderId,
+    name: req.user.name
   });
 });
 

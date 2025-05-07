@@ -9,7 +9,7 @@
     <title>My Drive</title>
 </head>
 <body>
-    <%- include("./partials/driveHeader.ejs", {name : "Ganesh"}) %>
+    <%- include("./partials/driveHeader.ejs", {name}) %>
     <%- include("./partials/driveNavigationBar.ejs", { path, parentFolderId }) %>
 
     <% if(folders.length > 0 || files.length > 0) {%>
